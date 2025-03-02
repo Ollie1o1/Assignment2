@@ -21,7 +21,7 @@ char* readDynamicString() {
 void createContacts(char *fileName) {
     FILE *fp = fopen(fileName, "rb+");
     if (fp == NULL) {
-        fp = fopen(fileName, "wb+");
+        fp = fopen(fileName, "wb+");  // If file does not exist, create it
         if (fp == NULL) {
             perror("Error opening file");
             return;
@@ -34,6 +34,7 @@ void createContacts(char *fileName) {
     char *lastName = NULL;
     char *email = NULL;
 
+    // Get user input
     printf("Employee Id: ");
     scanf("%d", &empId);
     while (getchar() != '\n');
@@ -47,9 +48,11 @@ void createContacts(char *fileName) {
     printf("Email: ");
     email = readDynamicString();
 
+    // Move to the end of the file to determine new contact position
     fseek(fp, 0, SEEK_END);
     long contactPos = ftell(fp);
 
+    // Initialize positions
     newContact.empIdPosn = contactPos + sizeof(struct contact);
     long dataPos = newContact.empIdPosn + sizeof(int);
 
@@ -66,29 +69,34 @@ void createContacts(char *fileName) {
         dataPos += strlen(email) + 1;
     }
 
+    // Find the last contact and update its `next` pointer
     struct contact lastContact;
     long prevPos = -1, currPos = 0;
-    
+
     fseek(fp, 0, SEEK_SET);
     while (fread(&lastContact, sizeof(struct contact), 1, fp) == 1) {
-        if (lastContact.next == 0) {
+        if (lastContact.next == 0) {  // Last contact in the list
             prevPos = currPos;
         }
         currPos = lastContact.next;
         if (currPos == 0) break;
     }
 
+    // If a previous contact exists, update its `next` pointer
     if (prevPos != -1) {
         fseek(fp, prevPos + offsetof(struct contact, next), SEEK_SET);
         fwrite(&contactPos, sizeof(long), 1, fp);
     }
 
+    // Append new contact
     fseek(fp, contactPos, SEEK_SET);
     fwrite(&newContact, sizeof(struct contact), 1, fp);
 
+    // Write employee ID
     fseek(fp, newContact.empIdPosn, SEEK_SET);
     fwrite(&empId, sizeof(int), 1, fp);
 
+    // Write optional fields
     if (newContact.firstNamePosn) {
         fseek(fp, newContact.firstNamePosn, SEEK_SET);
         fwrite(firstName, strlen(firstName) + 1, 1, fp);
@@ -102,6 +110,7 @@ void createContacts(char *fileName) {
         fwrite(email, strlen(email) + 1, 1, fp);
     }
 
+    // Cleanup
     free(firstName);
     free(lastName);
     free(email);
