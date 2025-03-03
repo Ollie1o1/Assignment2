@@ -17,7 +17,7 @@ by me in its entirety.
 #include "helper.h"
 #include <stdio.h>
 #include <stdlib.h>
-
+//search for the contact in the file
 int searchContacts(char *fileName, int keyId) {
     FILE *fp = fopen(fileName, "rb");
     if (!fp) return -1;
@@ -33,9 +33,9 @@ int searchContacts(char *fileName, int keyId) {
         int currId;
         fseek(fp, curr.empIdPosn, SEEK_SET);
         fread(&currId, sizeof(int), 1, fp);
-
+        //if the current id is the same as the key id
         if (currId == keyId) {
-            char *first = curr.firstNamePosn ? readString(fp) : NULL;
+            char *first = curr.firstNamePosn ? readString(fp) : NULL;   //cool
             char *last = curr.lastNamePosn ? readString(fp) : NULL;
             char *email = curr.emailPosn ? readString(fp) : NULL;
 
@@ -54,7 +54,7 @@ int searchContacts(char *fileName, int keyId) {
         }
 
         if (curr.next == 0) break;
-        pos = curr.next;
+        pos = curr.next;  //move to the next contact
     }
 
     fclose(fp);

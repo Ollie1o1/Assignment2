@@ -27,4 +27,4 @@ clean:
 	del /Q *.o
 	del /Q "$(BIN_DIR)\$(EXEC)"
 
-.PHONY: all clean
+.PHONY: all clean 

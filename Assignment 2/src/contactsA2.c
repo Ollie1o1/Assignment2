@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
                 }
                 break;
             case 2:
-                do {
+                do { // Get valid Employee ID
                     printf("Search for Employee Id? ");
                     scanf("%d", &empId);
                 } while(empId < 1 || empId > 9999);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
             default:
                 printf("Invalid choice\n");
         }
-    } while (menuChoice != -1);
+    } while (menuChoice != -1); 
 
     return 0;
 }
